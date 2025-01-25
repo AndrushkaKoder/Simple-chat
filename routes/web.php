@@ -7,8 +7,13 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 
-Route::get('/', [IndexController::class, 'index'])->name('home');
-Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+Route::middleware('auth')->group(function () {
+    Route::get('/', [IndexController::class, 'index'])->name('home');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{chat}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/create', [ChatController::class, 'create'])->name('chat.create');
+});
+
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

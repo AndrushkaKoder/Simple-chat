@@ -1,6 +1,7 @@
 <script>
 import { Link } from '@inertiajs/vue3';
 import HeaderComponent from "@/Components/Chat/HeaderComponent.vue";
+
 export default {
     components: {HeaderComponent, Link},
     data() {
@@ -8,15 +9,20 @@ export default {
             body: null
         }
     },
-    props: {
-        users: {
-            type: Object
-        },
-    },
+    props: [
+        "auth",
+        "users"
+    ],
     methods: {
         countUsers() {
             return Object.keys(this.users).length > 0
         },
+        createChat(userListId) {
+            this.$inertia.post('/chat/create', {
+                who: this.auth.id,
+                with: userListId
+            });
+        }
     }
 }
 </script>
@@ -30,9 +36,9 @@ export default {
                 <div v-for="user in this.users">
                     <div>
                         <p>{{ user.email }}</p>
-                        <span v-if="user.email" class="text-gray-400 text-sm">
+                        <button @click="createChat(user.id)" v-if="user.email" class="text-gray-400 text-sm">
                             Начать чат с пользователем
-                        </span>
+                        </button>
                     </div>
                 </div>
             </div>
