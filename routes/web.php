@@ -1,18 +1,14 @@
 <?php
 
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\IndexController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+
+Route::get('/', [IndexController::class, 'index'])->name('home');
+Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
