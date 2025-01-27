@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChatCreateRequest;
+use App\Http\Resources\ChatResource;
 use App\Models\Chat;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response as VueResponse;
@@ -20,13 +20,12 @@ class ChatController extends Controller
      */
     public function index(): VueResponse
     {
+        /*** @var Authenticatable|User $user */
         $user = Auth::user();
 
-        /*** @var Authenticatable|User $user */
-
         return Inertia::render('Chat/Index', [
-            'user' => $user,
-            'chats' => $user->chats
+            'auth' => $user,
+            'chats' => ChatResource::collection($user->chats),
         ]);
     }
 
@@ -36,11 +35,16 @@ class ChatController extends Controller
      */
     public function show(Chat $chat): VueResponse
     {
-        if (!Auth::user()->chats()->where('id', $chat->id)->count()) {
+        /*** @var Authenticatable|User $user */
+        $user = Auth::user();
+
+        if (!$user->chats()->where('id', $chat->id)->count()) {
             return Inertia::render('Welcome');
         }
         return Inertia::render('Chat/Show', [
-            'chat' => $chat
+            'auth' => $user,
+            'chats' => ChatResource::collection($user->chats),
+            'currentChat' => new ChatResource($chat)
         ]);
     }
 
@@ -54,13 +58,13 @@ class ChatController extends Controller
         /*** @var Authenticatable|User $user */
         $user = Auth::user();
 
-        $chat = Chat::query()->whereHas('users', function (Builder $query) use ($request) {
+        $chat = $user->chats()->whereHas('users', function (Builder $query) use ($request) {
             $query->where('user_id', $request['with']);
         })->first();
 
         if (!$chat) {
             $chat = $user->chats()->create();
-            $chat->users()->syncWithoutDetaching([$request['with']]);
+            $chat->users()->syncWithoutDetaching([$request['with'], Auth::id()]);
         }
 
         return redirect()->route('chat.show', $chat->id);

@@ -35,7 +35,7 @@ export default {
             <div v-if="this.countUsers()">
                 <div v-for="user in this.users">
                     <div>
-                        <p>{{ user.email }}</p>
+                        <p>{{ user.name }}</p>
                         <button @click="createChat(user.id)" v-if="user.email" class="text-gray-400 text-sm">
                             Начать чат с пользователем
                         </button>

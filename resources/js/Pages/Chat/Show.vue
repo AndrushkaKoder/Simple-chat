@@ -1,20 +1,36 @@
 <script>
 import HeaderComponent from "@/Components/Chat/HeaderComponent.vue";
+import axios from "axios";
+
 export default {
     data() {
         return {
-
+            body: ''
         }
     },
     props: [
-        'user',
-        'chats'
+        'auth',
+        'chats',
+        'currentChat'
     ],
     methods: {
         hasChats() {
-            return true
+            return Object.keys(this.chats).length > 0
+        },
+        chatMessages() {
+            return this.currentChat.data.messages
+        },
+        sendMessage() {
+            console.log(this.currentChat.data.id)
+            axios.post('/message/create', {
+                body: this.body.trim(),
+                chat_id: this.currentChat.data.id
+            }).then(res => {
+                console.log(res)
+            }).catch(ex => {
+                console.error(ex)
+            })
         }
-
     },
     components: {
         HeaderComponent
@@ -24,6 +40,7 @@ export default {
 
 <template>
     <HeaderComponent/>
+
     <div class="flex h-screen antialiased text-gray-800">
         <div class="flex flex-row h-full w-full overflow-x-hidden">
             <div class="flex flex-col py-8 pl-6 pr-2 w-64 bg-white flex-shrink-0">
@@ -32,41 +49,22 @@ export default {
                     <div v-if="hasChats()">
                         <div class="flex flex-col space-y-1 mt-4 -mx-2 h-48">
 
-                            <button
-                                class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
-                            >
-                                <div
-                                    class="flex items-center justify-center h-8 w-8 bg-gray-200 rounded-full"
-                                >
+                            <div v-for="chat in this.chats.data"
+                                 class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2">
+                                <div class="flex items-center justify-center h-8 w-8 bg-gray-200 rounded-full">
                                     M
                                 </div>
-                                <div class="ml-2 text-sm font-semibold">Marta Curtis</div>
-                                <div
-                                    class="flex items-center justify-center ml-auto text-xs text-white bg-red-500 h-4 w-4 rounded leading-none"
-                                >
+                                <div class="ml-2 text-sm font-semibold">{{ chat.chatUser.name }}</div>
+                                <div v-if="false"
+                                     class="flex items-center justify-center ml-auto text-xs text-white bg-red-500 h-4 w-4 rounded leading-none">
                                     2
                                 </div>
-                            </button>
-                            <button
-                                class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
-                            >
-                                <div
-                                    class="flex items-center justify-center h-8 w-8 bg-purple-200 rounded-full"
-                                >
-                                    J
-                                </div>
-                                <div class="ml-2 text-sm font-semibold">Jerry Guzman</div>
-                            </button>
+                            </div>
+
                         </div>
                     </div>
                     <div v-else>
                         <h3>Список чатов пуст, скорее напишите кому-нибудь из пользователей!</h3>
-                        <ul>
-                            <li>1</li>
-                            <li>2</li>
-                            <li>3</li>
-                            <li>4</li>
-                        </ul>
                     </div>
 
                 </div>
@@ -81,44 +79,38 @@ export default {
 
 
                                 <!--                                messages-->
-                                <div class="col-start-1 col-end-8 p-3 rounded-lg">
-                                    <div class="flex flex-row items-center">
-                                        <div
-                                            class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0"
-                                        >
-                                            A
-                                        </div>
-                                        <div
-                                            class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
-                                        >
-                                            <div>Hey How are you today?</div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <div v-for="message in this.chatMessages()">
 
-
-                                <div class="col-start-6 col-end-13 p-3 rounded-lg">
-                                    <div class="flex items-center justify-start flex-row-reverse">
-                                        <div
-                                            class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0"
-                                        >
-                                            A
-                                        </div>
-                                        <div
-                                            class="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl"
-                                        >
-                                            <div>
-                                                Lorem ipsum dolor sit, amet consectetur adipisicing. ?
+                                    <div v-if="message.is_inner" class="col-start-1 col-end-8 p-3 rounded-lg">
+                                        <div class="flex flex-row items-center">
+                                            <div
+                                                class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0"
+                                            >
+                                                A
                                             </div>
                                             <div
-                                                class="absolute text-xs bottom-0 right-0 -mb-5 mr-2 text-gray-500"
+                                                class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
                                             >
-                                                Seen
+                                                <div>{{ message.body }}</div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
+                                    <div v-else class="col-start-6 col-end-13 p-3 rounded-lg">
+                                        <div class="flex items-center justify-start flex-row-reverse">
+                                            <div class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
+                                                A
+                                            </div>
+                                            <div class="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl">
+                                                <div>{{ message.body }}</div>
+                                                <div class="absolute text-xs bottom-0 right-0 -mb-5 mr-2 text-gray-500">
+                                                    Seen
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
 
                             </div>
                         </div>
@@ -148,9 +140,9 @@ export default {
                         </div>
                         <div class="flex-grow ml-4">
                             <div class="relative w-full">
-                                <input
-                                    type="text"
-                                    class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"
+                                <input v-model="this.body"
+                                       type="text"
+                                       class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"
                                 />
                                 <button
                                     class="absolute flex items-center justify-center h-full w-12 right-0 top-0 text-gray-400 hover:text-gray-600"
@@ -173,8 +165,8 @@ export default {
                             </div>
                         </div>
                         <div class="ml-4">
-                            <button
-                                class="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0"
+                            <button @click="this.sendMessage()"
+                                    class="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0"
                             >
                                 <span>Отправить</span>
                                 <span class="ml-2">
