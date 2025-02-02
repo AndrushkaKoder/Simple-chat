@@ -23,7 +23,7 @@ class ChatController extends Controller
         /*** @var Authenticatable|User $user */
         $user = Auth::user();
 
-        return Inertia::render('Chat/Index', [
+        return Inertia::render('Welcome', [
             'auth' => $user,
             'chats' => ChatResource::collection($user->chats),
         ]);

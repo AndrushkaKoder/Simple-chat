@@ -2,9 +2,13 @@
 import HeaderComponent from "@/Components/Chat/HeaderComponent.vue";
 import {Link} from "@inertiajs/vue3";
 import axios from "axios";
+import Message from "@/Components/Chat/Message.vue";
+import ChatLink from "@/Components/Chat/ChatLink.vue";
 
 export default {
     components: {
+        ChatLink,
+        Message,
         HeaderComponent,
         Link,
     },
@@ -23,9 +27,6 @@ export default {
         hasChats() {
             return Object.keys(this.chats).length > 0
         },
-        hasFiles(message) {
-            return message.file !== null
-        },
         chatMessages() {
             return this.currentChat.data.messages
         },
@@ -43,125 +44,57 @@ export default {
             axios.post('/message/create', formData, {
                 'Content-Type': 'multipart/form-data',
             }).then(res => {
-                console.log(res)
+                if (res.status === 200 || res.status === 201) {
+                    this.body = ''
+                    this.$refs.messageInput.value = ''
+                    console.log(this.currentChat.data.messages.push(res.data.data))
+                }
             }).catch(ex => {
                 console.error(ex)
             })
         },
-        messageActions(event) {
-            event.preventDefault()
-            document.querySelector('.settings_menu').classList.toggle('hidden')
-        },
-        removeMessage(messageObject) {
-            console.log(this.chatMessages())
-            if (confirm('Сообщение будет удалено, вы уверены?')) {
-                axios.delete(`/message/${messageObject.id}/delete`).then(res => {
-                    if (res.status === 200) {
 
-                        let indexToRemove = this.chatMessages().findIndex(message => {
-                            return message.id === messageObject.id
-                        })
-                        this.chatMessages().splice(indexToRemove, 1);
-
-                        alert('Сообщение успешно удалено!')
-                    }
-                }).catch(error => {
-                    console.error(error)
-                })
-            }
-        }
     },
-    created() {
-
-    }
+    mounted() {
+        const anchor = this.$refs.scrollAnchor;
+        if (anchor) {
+            anchor.scrollIntoView()
+        }
+        this.$refs.messageInput.focus()
+    },
 }
 </script>
 
 <template>
-    <HeaderComponent/>
+    <HeaderComponent :page-title="this.currentChat.data.chatUser.name"/>
 
-    <div class="flex h-[90vh] antialiased text-gray-800">
+    <div class="flex h-[85vh] antialiased text-gray-800">
         <div class="flex flex-row h-full w-full overflow-x-hidden">
-            <div class="flex flex-col py-8 pl-6 pr-2 w-64 bg-white flex-shrink-0">
+            <div class="flex flex-col py-8 pl-6 pr-2 w-96 bg-white flex-shrink-0">
 
                 <div class="flex flex-col">
                     <div v-if="hasChats()">
                         <div class="flex flex-col space-y-1 mt-4 -mx-2 h-48">
-
-                            <div v-for="chat in this.chats.data"
-                                 class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2">
-                                <Link :href="route('chat.show', chat.slug)" class="flex items-center">
-                                    <div class="flex items-center justify-center h-8 w-8 bg-gray-200 rounded-full">
-                                        M
-                                    </div>
-                                    <div class="ml-2 text-sm font-semibold">
-                                        {{ chat.chatUser.name }}
-                                    </div>
-                                </Link>
-                                <div v-if="false"
-                                     class="flex items-center justify-center ml-auto text-xs text-white bg-red-500 h-4 w-4 rounded leading-none">
-                                    2
-                                </div>
-                            </div>
-
+                            <ChatLink :data="chats"/>
                         </div>
                     </div>
                     <div v-else>
                         <h3>Список чатов пуст, скорее напишите кому-нибудь из пользователей!</h3>
                     </div>
-
                 </div>
+
             </div>
             <div class="flex flex-col flex-auto h-full p-6">
                 <div class="flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-full p-4">
+
                     <div class="flex flex-col h-full overflow-x-auto mb-4">
                         <div v-if="this.hasMessages()" class="flex flex-col h-full">
                             <div v-for="message in this.chatMessages()" class="grid grid-cols-12 gap-y-2">
-                                <!-- messages-->
-                                <div v-if="!message.is_inner" class="col-start-1 col-end-8 p-3 rounded-lg">
-                                    <div class="flex flex-row items-center">
-                                        <div
-                                            class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
-                                            A
-                                        </div>
-                                        <div class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl">
-                                            <div>{{ message.body }}</div>
-                                            <div class="text-xs text-gray-400">{{ message.created_at }}</div>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div v-else class="col-start-6 col-end-13 p-3 rounded-lg">
-                                    <div class="flex items-center justify-start flex-row-reverse">
-                                        <div
-                                            class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
-                                            A
-                                        </div>
-                                        <div class="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl">
-                                            <div>{{ message.body }}</div>
-                                            <div v-if="this.hasFiles(message)">
-                                                <a :href="message.file" target="_blank" class="text-blue-500">Файл</a>
-                                            </div>
-                                            <div class="text-xs text-gray-400">{{ message.created_at }}</div>
-                                            <div class="absolute text-xs bottom-0 right-0 -mb-5 mr-2 text-gray-400">
-                                                Not read / Read
-                                            </div>
-                                        </div>
-                                        <div class="px-2 pt-2 pb-4 bg-white shadow-lg settings_menu hidden">
-                                            <div class="dropdown-menu">
-                                                <ul>
-                                                    <li>
-                                                        <button @click="removeMessage(message)" class="dropdown-item">
-                                                            Удалить
-                                                        </button>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <Message :data="message"/>
 
                             </div>
+                            <div ref="scrollAnchor" class="scroll-anchor"></div>
                         </div>
                         <div v-else class="flex flex-col h-full items-center justify-end">
                             <div>
@@ -175,7 +108,7 @@ export default {
                             <div>
                                 <label class="block">
                                     <span class="sr-only">Choose profile photo</span>
-                                    <input  @change="uploadFile" type="file" class="block w-full text-sm text-gray-500
+                                    <input @change="uploadFile" type="file" class="block w-full text-sm text-gray-500
                                         file:me-4 file:py-2 file:px-4
                                         file:rounded-lg file:border-0
                                         file:text-sm file:font-semibold
@@ -190,7 +123,7 @@ export default {
                             </div>
                             <div class="flex-grow ml-4">
                                 <div class="relative w-full">
-                                    <input v-model="this.body"
+                                    <input ref="messageInput" v-model="this.body"
                                            type="text"
                                            class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"/>
                                     <button
@@ -244,8 +177,11 @@ export default {
 </template>
 
 <style scoped>
-hidden {
+.hidden {
     display: none !important;
 }
 
+.scroll-anchor {
+    height: 1px;
+}
 </style>

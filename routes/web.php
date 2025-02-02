@@ -9,8 +9,7 @@ use Inertia\Inertia;
 
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', [IndexController::class, 'index'])->name('home');
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/chat/{slug}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/create', [ChatController::class, 'create'])->name('chat.create');
     Route::post('/message/create', [MessageController::class, 'create'])->name('message.create');
