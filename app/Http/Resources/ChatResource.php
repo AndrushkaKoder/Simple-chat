@@ -21,6 +21,7 @@ class ChatResource extends JsonResource
             })->firstOrFail(),
             'is_active' => $this->is_active,
             'is_private' => $this->is_private,
+            'slug' => $this->slug,
             'messages' => MessageResource::collection($this->messages)
         ];
     }

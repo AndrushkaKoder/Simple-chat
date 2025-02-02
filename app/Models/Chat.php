@@ -11,8 +11,17 @@ class Chat extends Model
     protected $fillable = [
         'name',
         'is_active',
-        'is_private'
+        'is_private',
+        'slug'
     ];
+
+    protected static function boot(): void
+    {
+        parent::boot();
+        static::creating(function (Chat $chat) {
+            $chat->slug = uniqid('', true);
+        });
+    }
 
     public function users(): BelongsToMany
     {

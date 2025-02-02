@@ -8,10 +8,10 @@ const isHomePage = function () {
 
 <template>
     <header class="grid px-10 py-5 header w-full">
-        <div class="header_content flex justify-start align-middle">
-            <div class="logo">
-                <img src="images/logo.png" alt="logo" class="w-10">
-            </div>
+        <div class="header_content flex justify-center align-middle">
+<!--            <div class="logo">-->
+<!--                <img :src="'images/logo.png'" alt="logo" class="w-10">-->
+<!--            </div>-->
             <div class="menu flex justify-center items-center">
                 <p v-if="isHomePage()" class="text-xl font-bold">
                     <Link :href="route('home')">Simple Chat</Link>

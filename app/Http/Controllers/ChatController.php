@@ -30,17 +30,21 @@ class ChatController extends Controller
     }
 
     /**
-     * @param Chat $chat
+     * @param string $slug
      * @return VueResponse
      */
-    public function show(Chat $chat): VueResponse
+    public function show(string $slug): VueResponse
     {
         /*** @var Authenticatable|User $user */
         $user = Auth::user();
 
-        if (!$user->chats()->where('id', $chat->id)->count()) {
+        if (!$user->chats()->where('slug', $slug)->count()) {
             return Inertia::render('Welcome');
         }
+
+        $chat = Chat::query()->whereSlug($slug)->firstOrFail();
+
+
         return Inertia::render('Chat/Show', [
             'auth' => $user,
             'chats' => ChatResource::collection($user->chats),
@@ -67,6 +71,6 @@ class ChatController extends Controller
             $chat->users()->syncWithoutDetaching([$request['with'], Auth::id()]);
         }
 
-        return redirect()->route('chat.show', $chat->id);
+        return redirect()->route('chat.show', $chat->slug);
     }
 }

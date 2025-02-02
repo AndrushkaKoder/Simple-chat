@@ -23,7 +23,8 @@ class MessageCreateRequest extends FormRequest
     {
         return [
             'chat_id' => ['required', 'int', 'exists:chats,id'],
-            'body' => ['required', 'string', 'min:1']
+            'body' => ['required', 'string', 'min:1'],
+            'files' => ['nullable']
         ];
     }
 }
