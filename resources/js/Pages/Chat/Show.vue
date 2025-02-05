@@ -4,9 +4,11 @@ import {Link} from "@inertiajs/vue3";
 import axios from "axios";
 import Message from "@/Components/Chat/Message.vue";
 import ChatLink from "@/Components/Chat/ChatLink.vue";
+import Search from "@/Components/Chat/Search.vue";
 
 export default {
     components: {
+        Search,
         ChatLink,
         Message,
         HeaderComponent,
@@ -15,7 +17,7 @@ export default {
     data() {
         return {
             body: '',
-            file: null
+            file: null,
         }
     },
     props: [
@@ -45,21 +47,27 @@ export default {
                 'Content-Type': 'multipart/form-data',
             }).then(res => {
                 if (res.status === 200 || res.status === 201) {
-                    this.body = ''
+                    this.clearInput()
                     this.$refs.messageInput.value = ''
-                    console.log(this.currentChat.data.messages.push(res.data.data))
+                    this.currentChat.data.messages.push(res.data.data)
+                    this.scrollToLastMessage()
                 }
             }).catch(ex => {
                 console.error(ex)
             })
         },
-
+        scrollToLastMessage() {
+            const anchor = this.$refs.scrollAnchor;
+            if (anchor) {
+                anchor.scrollIntoView()
+            }
+        },
+        clearInput() {
+            this.body = '';
+        },
     },
     mounted() {
-        const anchor = this.$refs.scrollAnchor;
-        if (anchor) {
-            anchor.scrollIntoView()
-        }
+        this.scrollToLastMessage()
         this.$refs.messageInput.focus()
     },
 }
@@ -71,6 +79,8 @@ export default {
     <div class="flex h-[85vh] antialiased text-gray-800">
         <div class="flex flex-row h-full w-full overflow-x-hidden">
             <div class="flex flex-col py-8 pl-6 pr-2 w-96 bg-white flex-shrink-0">
+
+                <Search/>
 
                 <div class="flex flex-col">
                     <div v-if="hasChats()">
@@ -89,7 +99,7 @@ export default {
 
                     <div class="flex flex-col h-full overflow-x-auto mb-4">
                         <div v-if="this.hasMessages()" class="flex flex-col h-full">
-                            <div v-for="message in this.chatMessages()" class="grid grid-cols-12 gap-y-2">
+                            <div v-for="message in this.chatMessages()" class="grid grid-cols-12 gap-y-2 message_items">
 
                                 <Message :data="message"/>
 

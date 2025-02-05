@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\ChatController;
-use App\Http\Controllers\IndexController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -14,6 +14,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/chat/create', [ChatController::class, 'create'])->name('chat.create');
     Route::post('/message/create', [MessageController::class, 'create'])->name('message.create');
     Route::delete('/message/{message}/delete', [MessageController::class, 'delete'])->name('message.delete');
+    Route::post('/search', SearchController::class);
 });
 
 
