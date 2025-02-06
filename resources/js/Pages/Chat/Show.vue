@@ -18,6 +18,7 @@ export default {
         return {
             body: '',
             file: null,
+            messages: null
         }
     },
     props: [
@@ -65,10 +66,19 @@ export default {
         clearInput() {
             this.body = '';
         },
+        readChatMessages() {
+            axios.get(`/chat/${this.currentChat.data.id}/read`).then(res => {
+                console.log(res)
+            })
+        }
+    },
+    computed() {
+        this.messages = this.currentChat.data.messages
     },
     mounted() {
         this.scrollToLastMessage()
         this.$refs.messageInput.focus()
+        this.readChatMessages()
     },
 }
 </script>

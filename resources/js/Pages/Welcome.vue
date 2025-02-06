@@ -2,10 +2,12 @@
 import HeaderComponent from "@/Components/Chat/HeaderComponent.vue";
 import {Link} from "@inertiajs/vue3";
 import ChatLink from "@/Components/Chat/ChatLink.vue";
+import Search from "@/Components/Chat/Search.vue";
 
 export default {
     name: 'Welcome',
     components: {
+        Search,
         ChatLink,
         HeaderComponent,
         Link
@@ -33,6 +35,7 @@ export default {
         <div class="flex flex-row h-full w-full overflow-x-hidden">
 
             <div class="flex flex-col py-8 pl-6 pr-2 w-96 bg-white flex-shrink-0">
+                <Search/>
 
                 <div class="flex flex-col">
                     <div v-if="hasChats()">

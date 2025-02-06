@@ -11,7 +11,8 @@ class Message extends Model
     protected $fillable = [
         'user_id',
         'chat_id',
-        'body'
+        'body',
+        'is_read'
     ];
 
     public function chat(): BelongsTo
@@ -30,5 +31,13 @@ class Message extends Model
             return $file->publicPath(true);
         }
         return null;
+    }
+
+    public function read(): bool
+    {
+        $this->is_read = true;
+        $this->save();
+
+        return true;
     }
 }

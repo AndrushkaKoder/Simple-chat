@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ChatCreateRequest;
 use App\Http\Resources\ChatResource;
 use App\Models\Chat;
+use App\Models\Message;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
@@ -72,5 +73,17 @@ class ChatController extends Controller
         }
 
         return redirect()->route('chat.show', $chat->slug);
+    }
+
+    public function readMessages(Chat $chat): SymfonyResponse
+    {
+       $chat->messages
+           ->where('is_read', false)
+           ->each(fn(Message $message) => $message->read());
+
+        return response()->json([
+            'success' => true,
+            'code' => 200
+        ]);
     }
 }

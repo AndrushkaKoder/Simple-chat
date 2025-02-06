@@ -39,11 +39,9 @@ export default {
             }
         },
         createOrViewChat(userId) {
-            axios.post('/chat/create', {
+            this.$inertia.post('/chat/create', {
                 who: this.$page.props.auth.id,
                 with: userId
-            }).then(res => {
-                console.log(res.data)
             })
         },
     },

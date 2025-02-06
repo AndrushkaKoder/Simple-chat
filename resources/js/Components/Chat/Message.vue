@@ -67,7 +67,12 @@ export default {
                 </div>
                 <div class="text-xs text-gray-400">{{ data.created_at }}</div>
                 <div class="absolute text-xs bottom-0 right-0 -mb-5 mr-2 text-gray-400">
-                    unread
+                    <span v-if="data.is_read">
+                        read
+                    </span>
+                    <span v-else>
+                        unread
+                    </span>
                 </div>
             </div>
         </div>

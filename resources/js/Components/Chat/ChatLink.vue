@@ -12,6 +12,15 @@ export default {
             let currentChatUrl = window.location.pathname.replace('/chat/', '');
             return currentChatUrl === chat.slug
         },
+        unreadMessages(messages) {
+            let unread = 0
+            messages.forEach(el => {
+                if (!el.is_read && !el.is_inner) {
+                    unread++
+                }
+            })
+            return unread;
+        },
     }
 }
 </script>
@@ -37,9 +46,9 @@ export default {
                     </div>
                 </div>
             </Link>
-            <div v-if="false"
+            <div v-if="this.unreadMessages(chat.messages)"
                  class="flex items-center justify-center ml-auto text-xs text-white bg-red-500 h-4 w-4 rounded leading-none">
-                2
+                {{ this.unreadMessages(chat.messages) }}
             </div>
         </div>
 
