@@ -19,6 +19,11 @@ export default {
             return this.searchedList
         }
     },
+    watch: {
+        body() {
+            console.log(this.body)
+        }
+    },
     methods: {
         search() {
             if (this.body.length >= 4) {
@@ -34,9 +39,7 @@ export default {
             return Object.keys(this.searchedListData).length > 0
         },
         hideSearchWindow(event) {
-            if (!event.target.classList.contains('list_item')) {
-                this.$refs.searchedList.classList.add('hidden')
-            }
+            this.$refs.searchedList.classList.add('hidden');
         },
         createOrViewChat(userId) {
             this.$inertia.post('/chat/create', {
@@ -98,6 +101,10 @@ export default {
 
 .hidden {
     display: none !important;
+}
+
+.show {
+    display: block !important;
 }
 
 .searched_list {

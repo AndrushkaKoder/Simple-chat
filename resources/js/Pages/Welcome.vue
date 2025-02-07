@@ -33,7 +33,6 @@ export default {
 
     <div class="flex h-[85vh] antialiased text-gray-800">
         <div class="flex flex-row h-full w-full overflow-x-hidden">
-
             <div class="flex flex-col py-8 pl-6 pr-2 w-96 bg-white flex-shrink-0">
                 <Search/>
 

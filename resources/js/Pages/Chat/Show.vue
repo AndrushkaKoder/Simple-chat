@@ -67,9 +67,7 @@ export default {
             this.body = '';
         },
         readChatMessages() {
-            axios.get(`/chat/${this.currentChat.data.id}/read`).then(res => {
-                console.log(res)
-            })
+            axios.get(`/chat/${this.currentChat.data.id}/read`);
         }
     },
     computed() {
@@ -94,9 +92,7 @@ export default {
 
                 <div class="flex flex-col">
                     <div v-if="hasChats()">
-                        <div class="flex flex-col space-y-1 mt-4 -mx-2 h-48">
-                            <ChatLink :data="chats"/>
-                        </div>
+                        <ChatLink :data="chats"/>
                     </div>
                     <div v-else>
                         <h3>Список чатов пуст, скорее напишите кому-нибудь из пользователей!</h3>
