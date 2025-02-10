@@ -9,7 +9,17 @@ class File extends Model
 {
     protected $fillable = [
         'message_id',
-        'path'
+        'path',
+        'name',
+        'extension'
+    ];
+
+    public const IMAGE_EXTENSIONS = [
+        'png',
+        'svg',
+        'jpg',
+        'webp',
+        'gif'
     ];
 
     public const FILES_DIRECTORY = 'Uploads';

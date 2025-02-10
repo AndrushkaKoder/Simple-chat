@@ -25,10 +25,15 @@ class Message extends Model
         return $this->hasMany(File::class, 'message_id');
     }
 
-    public function getFilePath(): ?string
+    public function getFile(): ?array
     {
         if ($file = $this->files()->first()) {
-            return $file->publicPath(true);
+            return [
+                'src' => $file->publicPath(true),
+                'name' => $file->name,
+                'extension' => $file->extension,
+                'is_image' => in_array($file->extension, File::IMAGE_EXTENSIONS)
+            ];
         }
         return null;
     }

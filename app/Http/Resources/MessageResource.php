@@ -20,7 +20,7 @@ class MessageResource extends JsonResource
             'is_inner' => $this->user_id === Auth::id(),
             'is_read' => $this->is_read,
             'created_at' => (new Carbon($this->created_at))->diffForHumans(),
-            'file' => $this->getFilePath()
+            'file' => $this->getFile()
         ];
     }
 }

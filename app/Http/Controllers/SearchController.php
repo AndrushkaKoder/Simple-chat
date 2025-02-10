@@ -8,6 +8,7 @@ use App\Http\Requests\SearchRequest;
 use App\Http\Resources\SearchResource;
 use App\Models\User;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Auth;
 
 class SearchController extends Controller
 {
@@ -17,6 +18,7 @@ class SearchController extends Controller
         $searchValue = $request->validated('body');
 
         $searchUsers = User::query()
+            ->where('email', '!=', Auth::user()->email)
             ->where('email', 'like', '%' .$searchValue .'%')
             ->orWhere('name', 'like', '%' .$searchValue .'%')
 //            ->orWhere('phone', 'like', '%' .$searchValue .'%')

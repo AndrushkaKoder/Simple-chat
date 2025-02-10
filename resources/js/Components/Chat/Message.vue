@@ -63,7 +63,9 @@ export default {
             <div class="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl">
                 <div>{{ data.body }}</div>
                 <div v-if="this.hasFiles(data)">
-                    <a :href="data.file" target="_blank" class="text-blue-500">Файл</a>
+                    <a :href="data.file.src" target="_blank" class="text-blue-500">{{ data.file.name }}
+                        <img :src="data.file.src" :alt="data.file.name" class="max-w-40" v-if="data.file.is_image">
+                    </a>
                 </div>
                 <div class="text-xs text-gray-400">{{ data.created_at }}</div>
                 <div class="absolute text-xs bottom-0 right-0 -mb-5 mr-2 text-gray-400">

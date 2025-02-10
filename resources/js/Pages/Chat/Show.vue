@@ -18,7 +18,8 @@ export default {
         return {
             body: '',
             file: null,
-            messages: null
+            messages: null,
+            error: ''
         }
     },
     props: [
@@ -40,22 +41,27 @@ export default {
             this.file = event.target.files[0]
         },
         sendMessage() {
-            const formData = new FormData();
-            formData.append('file', this.file)
-            formData.append('body', this.body.trim())
-            formData.append('chat_id', this.currentChat.data.id)
-            axios.post('/message/create', formData, {
-                'Content-Type': 'multipart/form-data',
-            }).then(res => {
-                if (res.status === 200 || res.status === 201) {
-                    this.clearInput()
-                    this.$refs.messageInput.value = ''
-                    this.currentChat.data.messages.push(res.data.data)
-                    this.scrollToLastMessage()
-                }
-            }).catch(ex => {
-                console.error(ex)
-            })
+            if (this.body.length > 0 || this.file !== null) {
+                this.$refs.messageInput.classList.remove('send_error')
+                const formData = new FormData();
+                formData.append('file', this.file)
+                formData.append('body', this.body.trim())
+                formData.append('chat_id', this.currentChat.data.id)
+                axios.post('/message/create', formData, {
+                    'Content-Type': 'multipart/form-data',
+                }).then(res => {
+                    if (res.status === 200 || res.status === 201) {
+                        this.clearInput()
+                        this.$refs.messageInput.value = ''
+                        this.currentChat.data.messages.push(res.data.data)
+                        this.scrollToLastMessage()
+                    }
+                }).catch(error => {
+                    console.error(error.response.data)
+                })
+            } else {
+                this.$refs.messageInput.classList.add('send_error')
+            }
         },
         scrollToLastMessage() {
             const anchor = this.$refs.scrollAnchor;
@@ -163,6 +169,7 @@ export default {
                             </div>
                             <div class="ml-4">
                                 <button
+                                    ref="sendButton"
                                     class="flex items-center justify-center bg-blue-600 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0">
                                     <span>Отправить</span>
                                     <span class="ml-2">
@@ -199,5 +206,9 @@ export default {
 
 .scroll-anchor {
     height: 1px;
+}
+
+.send_error {
+    border: 2px solid red;
 }
 </style>
