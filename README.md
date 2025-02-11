@@ -7,3 +7,5 @@
     <li>Websocket</li>
     <li>Docker</li>
 </ul>
+<p>Запуск приложения через Makefile командой 'make up'</p>
+<p>Запуск Vite командой 'vite'</p>
