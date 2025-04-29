@@ -1,88 +1,69 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChatCreateRequest;
 use App\Http\Resources\ChatResource;
 use App\Models\Chat;
-use App\Models\Message;
-use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
+use App\Services\Chat\ChatService;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response as VueResponse;
-use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class ChatController extends Controller
 {
-    /**
-     * @return VueResponse
-     */
+    public function __construct(
+        private ChatService $chatService
+    )
+    {
+    }
+
     public function index(): VueResponse
     {
-        /*** @var Authenticatable|User $user */
-        $user = Auth::user();
-
         return Inertia::render('Welcome', [
-            'auth' => $user,
-            'chats' => ChatResource::collection($user->chats),
+            'auth' => $this->chatService->currentUser(),
+            'chats' => $this->chatService->getUserChats(),
         ]);
     }
 
-    /**
-     * @param string $slug
-     * @return VueResponse
-     */
     public function show(string $slug): VueResponse
     {
-        /*** @var Authenticatable|User $user */
-        $user = Auth::user();
+        $user = $this->chatService->currentUser();
 
         if (!$user->chats()->where('slug', $slug)->count()) {
             return Inertia::render('Welcome');
         }
 
-        $chat = Chat::query()->whereSlug($slug)->firstOrFail();
-
-
         return Inertia::render('Chat/Show', [
             'auth' => $user,
-            'chats' => ChatResource::collection($user->chats),
-            'currentChat' => new ChatResource($chat)
+            'chats' => ChatResource::collection($this->chatService->getUserChats()),
+            'currentChat' => new ChatResource($this->chatService->currentChat($slug))
         ]);
     }
 
-    /**
-     * @param ChatCreateRequest $request
-     * @return SymfonyResponse
-     * Создание, либо возврат чата
-     */
-    public function create(ChatCreateRequest $request): SymfonyResponse
+    public function create(ChatCreateRequest $request): RedirectResponse
     {
-        /*** @var Authenticatable|User $user */
-        $user = Auth::user();
-
+        $user = $this->chatService->currentUser();
         $chat = $user->chats()->whereHas('users', function (Builder $query) use ($request) {
-            $query->where('user_id', $request['with']);
+            $query->where('user_id', $request->with);
         })->first();
 
         if (!$chat) {
             $chat = $user->chats()->create();
-            $chat->users()->syncWithoutDetaching([$request['with'], Auth::id()]);
+            $chat->users()->syncWithoutDetaching([$request->with, $user->id]);
         }
 
         return redirect()->route('chat.show', $chat->slug);
     }
 
-    public function readMessages(Chat $chat): SymfonyResponse
+    public function readMessages(Chat $chat): JsonResponse
     {
-       $chat->messages
-           ->where('is_read', false)
-           ->each(fn(Message $message) => $message->read());
-
         return response()->json([
-            'success' => true,
+            'success' => $this->chatService->readChatMessages($chat),
             'code' => 200
         ]);
     }
