@@ -1,16 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MessageCreateRequest;
 use App\Http\Resources\MessageResource;
 use App\Models\File;
 use App\Models\Message;
+use App\Services\Message\MessageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
+    public function __construct(private readonly MessageService $messageService)
+    {
+    }
+
     public function create(MessageCreateRequest $request): JsonResponse|MessageResource
     {
 

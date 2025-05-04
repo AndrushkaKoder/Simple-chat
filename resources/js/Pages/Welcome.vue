@@ -2,7 +2,7 @@
 import HeaderComponent from "@/Components/Chat/HeaderComponent.vue";
 import {Link} from "@inertiajs/vue3";
 import ChatLink from "@/Components/Chat/ChatLink.vue";
-import Search from "@/Components/Chat/Search.vue";
+import Search from "@/Components/Search/Search.vue";
 
 export default {
     name: 'Welcome',
@@ -38,7 +38,7 @@ export default {
 
                 <div class="flex flex-col">
                     <div v-if="hasChats()">
-                        <ChatLink :data="chats"/>
+                        <ChatLink :chatsList="chats"/>
                     </div>
                     <div v-else>
                         <h3>Список чатов пуст, скорее напишите кому-нибудь из пользователей!</h3>

@@ -5,7 +5,7 @@ export default {
     name: "ChatLink",
     components: {Link},
     props: [
-        'data'
+        'chatsList'
     ],
     methods: {
         isActiveChat(chat) {
@@ -27,8 +27,7 @@ export default {
 
 <template>
     <div class="flex flex-col space-y-1 mt-4 h-48 links_list">
-
-        <div v-for="chat in this.data.data"
+        <div v-for="chat in this.chatsList.data"
              v-bind:class="{ active_chat: isActiveChat(chat) }"
              class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-3 h-[60px]">
             <Link :href="route('chat.show', chat.slug)"
@@ -54,7 +53,6 @@ export default {
                 {{ this.unreadMessages(chat.messages) }}
             </div>
         </div>
-
     </div>
 </template>
 

@@ -2,16 +2,15 @@
 
 namespace App\Providers;
 
-use App\Repository\Chat\ChatRepository;
-use App\Repository\Chat\ChatRepositoryInterface;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->bind(ChatRepositoryInterface::class, ChatRepository::class);
+        Inertia::share('appName', config('app.name'));
     }
 
     public function boot(): void

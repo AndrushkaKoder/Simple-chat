@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Auth;
 
 class SearchController extends Controller
 {
-
     public function __invoke(SearchRequest $request): AnonymousResourceCollection
     {
         $searchValue = $request->validated('body');
@@ -21,7 +20,6 @@ class SearchController extends Controller
             ->where('email', '!=', Auth::user()->email)
             ->where('email', 'like', '%' .$searchValue .'%')
             ->orWhere('name', 'like', '%' .$searchValue .'%')
-//            ->orWhere('phone', 'like', '%' .$searchValue .'%')
             ->get();
 
         return SearchResource::collection($searchUsers);

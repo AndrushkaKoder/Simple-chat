@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -35,6 +37,9 @@ class Chat extends Model
 
     public function messages(): HasMany
     {
-        return $this->hasMany(Message::class, 'chat_id');
+        return $this->hasMany(
+            Message::class,
+            'chat_id'
+        );
     }
 }

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\DTO\Chat\CreateChatDTO;
 use App\Http\Requests\ChatCreateRequest;
 use App\Http\Resources\ChatResource;
 use App\Models\Chat;
 use App\Services\Chat\ChatService;
-use Illuminate\Database\Eloquent\Builder;
 use Inertia\Inertia;
 use Inertia\Response as VueResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,10 +17,11 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class ChatController extends Controller
 {
     public function __construct(
-        private ChatService $chatService
+        private readonly ChatService $chatService
     )
     {
     }
+
 
     public function index(): VueResponse
     {
@@ -30,35 +31,36 @@ class ChatController extends Controller
         ]);
     }
 
+
     public function show(string $slug): VueResponse
     {
         $user = $this->chatService->currentUser();
 
-        if (!$user->chats()->where('slug', $slug)->count()) {
+        if (!$user->hasChats($slug)) {
             return Inertia::render('Welcome');
         }
 
         return Inertia::render('Chat/Show', [
             'auth' => $user,
-            'chats' => ChatResource::collection($this->chatService->getUserChats()),
+            'chats' => $this->chatService->getUserChats(),
             'currentChat' => new ChatResource($this->chatService->currentChat($slug))
         ]);
     }
 
+
     public function create(ChatCreateRequest $request): RedirectResponse
     {
-        $user = $this->chatService->currentUser();
-        $chat = $user->chats()->whereHas('users', function (Builder $query) use ($request) {
-            $query->where('user_id', $request->with);
-        })->first();
+        $chatSlug = $this->chatService
+            ->createNewChat(
+                new CreateChatDTO(
+                    $request->validated('who'),
+                    $request->validated('with')
+                )
+            );
 
-        if (!$chat) {
-            $chat = $user->chats()->create();
-            $chat->users()->syncWithoutDetaching([$request->with, $user->id]);
-        }
-
-        return redirect()->route('chat.show', $chat->slug);
+        return redirect()->route('chat.show', $chatSlug);
     }
+
 
     public function readMessages(Chat $chat): JsonResponse
     {
@@ -67,4 +69,5 @@ class ChatController extends Controller
             'code' => 200
         ]);
     }
+
 }

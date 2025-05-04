@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use App\Models\Chat;
@@ -16,9 +18,12 @@ class ChatResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'chatUser' => $this->users()->whereHas('chats', function (Builder $query) {
-                $query->where('user_id', '!=', Auth::id());
-            })->firstOrFail(),
+            'chatUser' => $this->users()->whereHas(
+                'chats',
+                function (Builder $query) {
+                    $query->where('user_id', '!=', Auth::id());
+                }
+            )->firstOrFail(),
             'is_active' => $this->is_active,
             'is_private' => $this->is_private,
             'slug' => $this->slug,
