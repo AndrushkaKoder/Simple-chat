@@ -8,35 +8,29 @@ use App\DTO\Chat\CreateChatDTO;
 use App\Http\Resources\ChatResource;
 use App\Models\Chat;
 use App\Models\Message;
-use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
+use App\Services\User\UserService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\Auth;
 
 final class ChatService
 {
-    public function currentUser(): Authenticatable|User
+    public function __construct(private UserService $userService)
     {
-        return Auth::user();
     }
-
 
     public function getUserChats(): AnonymousResourceCollection
     {
-        return ChatResource::collection($this->currentUser()->chats);
+        return ChatResource::collection($this->userService->getCurrentUser()->chats);
     }
-
 
     public function currentChat(string $chatSlug): Chat
     {
         return Chat::query()->whereSlug($chatSlug)->firstOrFail();
     }
 
-
     public function createNewChat(CreateChatDTO $dto): string
     {
-        $user = $this->currentUser();
+        $user = $this->userService->getCurrentUser();
         $chat = $user->chats()->whereHas('users', function (Builder $query) use ($dto) {
             $query->where('user_id', $dto->getWithCreated());
         })->first();
@@ -48,7 +42,6 @@ final class ChatService
 
         return $chat->slug;
     }
-
 
     public function readChatMessages(Chat $chat): bool
     {

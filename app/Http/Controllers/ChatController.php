@@ -9,6 +9,7 @@ use App\Http\Requests\ChatCreateRequest;
 use App\Http\Resources\ChatResource;
 use App\Models\Chat;
 use App\Services\Chat\ChatService;
+use App\Services\User\UserService;
 use Inertia\Inertia;
 use Inertia\Response as VueResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,7 +18,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class ChatController extends Controller
 {
     public function __construct(
-        private readonly ChatService $chatService
+        private readonly ChatService $chatService,
+        private readonly UserService $userService
     )
     {
     }
@@ -26,7 +28,7 @@ class ChatController extends Controller
     public function index(): VueResponse
     {
         return Inertia::render('Welcome', [
-            'auth' => $this->chatService->currentUser(),
+            'auth' => $this->userService->getCurrentUser(),
             'chats' => $this->chatService->getUserChats(),
         ]);
     }
@@ -34,7 +36,7 @@ class ChatController extends Controller
 
     public function show(string $slug): VueResponse
     {
-        $user = $this->chatService->currentUser();
+        $user = $this->userService->getCurrentUser();
 
         if (!$user->hasChats($slug)) {
             return Inertia::render('Welcome');

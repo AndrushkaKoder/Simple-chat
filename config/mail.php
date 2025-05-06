@@ -113,4 +113,6 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+
+    'app_email' => env('APP_EMAIL', 'andrusha.kolmakov@yandex.ru')
 ];
