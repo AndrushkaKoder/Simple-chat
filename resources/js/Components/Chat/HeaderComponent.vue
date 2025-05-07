@@ -13,7 +13,8 @@ export default {
         }
     },
     props: [
-        'pageTitle'
+        'pageTitle',
+        'goBackLink'
     ],
     methods: {
         isHomePage() {
@@ -43,10 +44,12 @@ export default {
                 </button>
             </div>
             <div class="flex max-lg:ml-auto space-x-4">
-                <button
-                    class="px-4 py-2 text-sm rounded-full font-medium tracking-wide text-white border border-blue-600 bg-blue-600 hover:bg-blue-700 transition-all">
+                <Link v-if="goBackLink" :href="route('chat.index')"  class="px-4 py-2 text-sm rounded-full font-medium tracking-wide text-white border border-blue-600 bg-blue-600 hover:bg-blue-700 transition-all">
+                    Назад
+                </Link>
+                <Link v-else :href="route('profile.edit')"  class="px-4 py-2 text-sm rounded-full font-medium tracking-wide text-white border border-blue-600 bg-blue-600 hover:bg-blue-700 transition-all">
                     Профиль
-                </button>
+                </Link>
                 <Link :href="route('logout')"  class="px-4 py-2 text-sm rounded-full font-medium tracking-wide text-slate-900 border border-gray-400 bg-transparent bg-red-400 hover:bg-gray-50 transition-all logout_btn">
                     Выйти
                 </Link>
