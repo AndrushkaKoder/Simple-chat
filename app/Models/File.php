@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class File extends Model
 {
@@ -16,15 +17,10 @@ class File extends Model
         'extension'
     ];
 
-    public const IMAGE_EXTENSIONS = [
-        'png',
-        'svg',
-        'jpg',
-        'webp',
-        'gif'
-    ];
-
-    public const FILES_DIRECTORY = 'Uploads';
+    public function fileable(): MorphTo
+    {
+        return $this->morphTo();
+    }
 
     public function message(): BelongsTo
     {
