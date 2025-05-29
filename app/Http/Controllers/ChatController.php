@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\DTO\Chat\CreateChatDTO;
+use App\DTO\Chat\CreateChat;
 use App\Http\Requests\ChatCreateRequest;
 use App\Http\Resources\ChatResource;
 use App\Models\Chat;
@@ -54,7 +54,7 @@ class ChatController extends Controller
     {
         $chatSlug = $this->chatService
             ->createNewChat(
-                new CreateChatDTO(
+                new CreateChat(
                     $request->validated('who'),
                     $request->validated('with')
                 )

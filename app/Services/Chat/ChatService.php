@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Chat;
 
-use App\DTO\Chat\CreateChatDTO;
+use App\DTO\Chat\CreateChat;
 use App\Http\Resources\ChatResource;
 use App\Models\Chat;
 use App\Models\Message;
@@ -28,7 +28,7 @@ final class ChatService
         return Chat::query()->whereSlug($chatSlug)->firstOrFail();
     }
 
-    public function createNewChat(CreateChatDTO $dto): string
+    public function createNewChat(CreateChat $dto): string
     {
         $user = $this->userService->getCurrentUser();
         $chat = $user->chats()->whereHas('users', function (Builder $query) use ($dto) {

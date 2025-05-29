@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\DTO\User\UserProfileUpdate;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Services\User\UserService;
 use Illuminate\Http\RedirectResponse;
@@ -15,12 +16,11 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
-
     public function __construct(private readonly UserService $userService)
     {
     }
 
-    public function edit(Request $request): Response
+    public function edit(): Response
     {
         return Inertia::render('Profile/Edit', [
             'user' => $this->userService->getCurrentUser()
@@ -29,33 +29,8 @@ class ProfileController extends Controller
 
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
-        $request->user()->save();
-
+        $this->userService->updateUserProfile(new UserProfileUpdate(...$request->validated()));
         return Redirect::route('profile.edit');
-    }
-
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
-
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
     }
 
     public function logout(Request $request): RedirectResponse

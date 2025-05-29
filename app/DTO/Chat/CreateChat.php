@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\DTO\Chat;
 
-final readonly class CreateChatDTO
+final readonly class CreateChat
 {
     public function __construct(
         private int $whoCreated,
